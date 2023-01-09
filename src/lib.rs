@@ -56,7 +56,7 @@ pub fn decrypt(key: &[u8], cipher_txt: &[u8], nouce: &[u8]) -> Result<Vec<u8>, E
 }
 
 
-pub fn prepareIoFrame(plainText :&[u8]) -> Result<Vec<u8>, Error> {
+pub fn prepareEncodedIoFrame(plainText :&[u8]) -> Result<Vec<u8>, Error> {
 
     const KEY: &[u8; 32] = b"a very simple secret key to use!";
 
@@ -76,7 +76,7 @@ pub fn prepareIoFrame(plainText :&[u8]) -> Result<Vec<u8>, Error> {
 }
 
 
-pub fn getPayloads(encoded_payload :&Vec<u8>) -> Result<Vec<PayLoad>, Error> {
+pub fn getDecodedPayloads(encoded_payload :&Vec<u8>) -> Result<Vec<PayLoad>, Error> {
 
     const KEY: &[u8; 32] = b"a very simple secret key to use!";
 
@@ -92,15 +92,18 @@ pub fn getPayloads(encoded_payload :&Vec<u8>) -> Result<Vec<PayLoad>, Error> {
         let decrypted = decrypt(KEY, &frame1.pay_load, &frame1.nonce).unwrap();
         let payload:PayLoad = bincode::deserialize(decrypted.as_ref()).unwrap();
 
-        payloads.fill(payload);
+        payloads.push(payload);
     
     
         // print!("decrypted22222222222 {:?}, PLAIN_TEXT{:?}\n", payload, PLAIN_TEXT1.as_ref());
 
+        // print!("payload111 :{:?}\n", &payload);
         start = start + bincode::serialized_size(&frame1).unwrap() as usize;
 
     }
+    
 
+    // print!("payloads22222 :{:?}\n", payloads);
     Ok(payloads)
 
 }
